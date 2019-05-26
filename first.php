@@ -1,6 +1,7 @@
 <?php
 /**
 *PHP MySQL BLOB Demo
+*copied from http://www.mysqltutorial.org/php-mysql-blob/
 */
 
 class BobDemo {
