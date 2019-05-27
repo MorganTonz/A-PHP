@@ -4,7 +4,7 @@
 *copied from http://www.mysqltutorial.org/php-mysql-blob/
 */
 
-class BobDemo {
+class BlobDemo {
 	const DB_HOST = 'localhost';
 	const DB_NAME = 'test';
 	const DB_USER = 'root';
@@ -14,12 +14,14 @@ class BobDemo {
 	*OPEN THE database connection_aborted
 	*/
 	
-	public function __construct {
+	public function __construct() {
 		//open database connection 
 		$conStr = sprintf("mysql:host=%s; dbname=%; charset=utf8",self::DB_HOST, self::DB_NAME);
 		
 		try {
-			$this->pdo = new PDO($conStr, self::DB_USER, self::DB_PASSWORD);
+			$this->pdo = mysqli_connect("localhost","root","")or die(mysqli_error());
+             mysqli_select_db($this->pdo,"test")or die(mysqli_error());
+			//$this->pdo = new PDO($conStr, self::DB_USER, self::DB_PASSWORD);
 			//for prior PHP 5.3.6
 			//$conn->exec("set names utf8");
 		} catch (PDOException $e) {
@@ -42,9 +44,9 @@ class BobDemo {
 	*@return bool
 	*/
 	public function insertBlob($filePath, $mime) {
-		$blob = fopen($filePath, 'rb') //open the file for reading in binary mode
+		$blob = fopen($filePath, 'rb'); //open the file for reading in binary mode
 		
-		$sql = "INSERT INTO files(mime,data) VALUES(:mime, :data)"
+		$sql = "INSERT INTO files(mime,data) VALUES(:mime,:data)";
 		
 		$stmt = $this->pdo->prepare($sql);
 		
@@ -94,3 +96,13 @@ class BobDemo {
 	 }
 }
 
+$blobObj = new BlobDemo();
+
+//test insert gif image
+$blobObj->insertBlob('Webp.net-gifmaker.gif', "image/gif");
+
+// select the BLOB data and display it as a GIF image
+$a = $blobObj->selectBlob(1);
+header("Content-Type:" . $a['mime']);
+echo $a['data'];
+?>
